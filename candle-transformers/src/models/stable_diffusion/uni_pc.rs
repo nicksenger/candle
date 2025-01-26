@@ -606,7 +606,7 @@ impl Scheduler for EdmDpmMultistepScheduler {
             (CorrectorConfiguration::Enabled { skip_steps: s }, Some(last_sample))
                 if !s.contains(&step_index) && step_index > 0 =>
             {
-                &self.multistep_uni_c_bh_update(
+                self.multistep_uni_c_bh_update(
                     model_output_converted,
                     self.state.model_outputs(),
                     last_sample,
@@ -615,7 +615,7 @@ impl Scheduler for EdmDpmMultistepScheduler {
                 )?
             }
             (CorrectorConfiguration::Enabled { .. }, _) | (CorrectorConfiguration::Disabled, _) => {
-                sample
+                sample.clone()
             }
         };
 
@@ -640,7 +640,7 @@ impl Scheduler for EdmDpmMultistepScheduler {
             .update_order(this_order.min(self.state.lower_order_nums() + 1));
 
         self.state.update_last_sample(sample.clone());
-        let prev_sample = self.multistep_uni_p_bh_update(sample, timestep)?;
+        let prev_sample = self.multistep_uni_p_bh_update(&sample, timestep)?;
 
         let lower_order_nums = self.state.lower_order_nums();
         if lower_order_nums < self.config.solver_order {

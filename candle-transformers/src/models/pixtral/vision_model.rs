@@ -285,14 +285,14 @@ impl RotaryEmbedding {
     ) -> Result<(Tensor, Tensor)> {
         let (_b_sz, _h, _seq_len, _n_embd) = q.dims4()?;
         let (cos, sin) = match subsampled_positions {
-            None => (&self.cos, &self.sin),
+            None => (self.cos.clone(), self.sin.clone()),
             Some(pos) => (
-                &self.cos.index_select(pos, 0)?,
-                &self.sin.index_select(pos, 0)?,
+                self.cos.index_select(pos, 0)?,
+                self.sin.index_select(pos, 0)?,
             ),
         };
-        let q_embed = candle_nn::rotary_emb::rope(q, cos, sin)?;
-        let k_embed = candle_nn::rotary_emb::rope(k, cos, sin)?;
+        let q_embed = candle_nn::rotary_emb::rope(q, &cos, &sin)?;
+        let k_embed = candle_nn::rotary_emb::rope(k, &cos, &sin)?;
         Ok((q_embed, k_embed))
     }
 }

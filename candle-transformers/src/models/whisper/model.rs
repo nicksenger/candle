@@ -428,13 +428,13 @@ impl TextDecoder {
             .unwrap_or_default();
 
         let x = if offset > 0 {
-            &x.narrow(1, offset, 1)?
+            x.narrow(1, offset, 1)?
         } else {
-            x
+            x.clone()
         };
 
         let last = x.dim(D::Minus1)?;
-        let token_embedding = self.token_embedding.forward(x)?;
+        let token_embedding = self.token_embedding.forward(&x)?;
         let positional_embedding = self.positional_embedding.narrow(0, offset, last)?;
         let mut x = token_embedding.broadcast_add(&positional_embedding)?;
         for block in self.blocks.iter_mut() {
