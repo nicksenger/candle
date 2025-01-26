@@ -8,7 +8,7 @@ use candle_nn::ops::softmax_last_dim;
 pub struct Raw(pub Vec<f32>);
 
 /// Word-level timestamp
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Word {
     pub text: String,
     pub start: f32,
@@ -75,7 +75,7 @@ pub struct AlignmentHead {
 }
 
 /// The collection of cross-attention heads to use for timestamp determination
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum AlignmentHeads {
     /// Uses all heads from the top layers up to the specified maximum
     TopLayerHeads { max_layers: usize },
