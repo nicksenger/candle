@@ -7,6 +7,8 @@ pub mod wav;
 
 use candle::utils::{cuda_is_available, metal_is_available, wgpu_is_available};
 use candle::{Device, Result, Tensor};
+#[cfg(feature = "wgpu")]
+use candle::WgpuDeviceConfig;
 
 pub fn device(cpu: bool) -> Result<Device> {
     if cpu {
@@ -16,8 +18,7 @@ pub fn device(cpu: bool) -> Result<Device> {
     } else if metal_is_available() {
         Ok(Device::new_metal(0)?)
     } else if wgpu_is_available(){
-        let config = candle::WgpuDeviceConfig::default();
-        Ok(Device::new_wgpu_config(0, config)?)
+        Ok(Device::new_wgpu(0)?)
     } else {
         #[cfg(all(target_os = "macos", target_arch = "aarch64"))]
         {
